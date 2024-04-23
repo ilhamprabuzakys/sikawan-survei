@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import AppGuestLayout from '@/layouts/AppGuestLayout.vue';
+import DashboardLayout from '@/layouts/DashboardLayout.vue';
 
 const APP_NAME = 'Kelola Data Survei';
 
@@ -11,16 +11,22 @@ const router = createRouter({
             path: "/",
             name: "Data Survei",
             component: () => import("@/views/SurveiView.vue"),
-            meta: { layout: AppGuestLayout }
+            meta: { layout: DashboardLayout }
         },
         {
             path: "/admin",
             name: "Pengelolaan Data Survei",
             component: () => import("@/views/AdminView.vue"),
-            meta: { layout: AppGuestLayout }
+            meta: { layout: DashboardLayout }
+        },
+        {
+            path: "/database",
+            name: "Database Survei",
+            component: () => import("@/views/DatabaseSurveiView.vue"),
+            meta: { layout: DashboardLayout }
         },
     ],
-    linkActiveClass: 'text-secondary',
+    linkActiveClass: 'active',
     linkExactActiveClass: 'exact-active',
 });
 
