@@ -39,3 +39,18 @@ import Logo from '@/assets/logo.png';
         </div>
     </header>
 </template>
+
+<style scoped>
+header {
+    background-color: var(--header-bg);
+}
+
+header .navbar-brand {
+    padding: 1rem 1.55rem;
+    background-color: rgb(0 0 0 / 10%);
+}
+
+.navbar .form-control {
+    padding: 0.75rem 1rem;
+}
+</style>

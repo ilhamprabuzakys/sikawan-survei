@@ -11,13 +11,22 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@vueuse/rxjs": "^10.9.0",
+        "axios": "^1.6.8",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
+        "datatables.net-bs5": "^2.0.5",
+        "datatables.net-vue3": "^3.0.1",
+        "dexie": "^4.0.4",
+        "lodash": "^4.17.21",
         "pinia": "^2.1.7",
+        "rxjs": "^7.8.1",
         "survey-vue3-ui": "^1.9.139",
+        "sweetalert2": "^11.10.8",
         "vite-plugin-mkcert": "^1.17.5",
         "vue": "^3.4.21",
-        "vue-router": "^4.3.0"
+        "vue-router": "^4.3.0",
+        "vue-select": "^4.0.0-beta.6"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.0.4",

@@ -43,3 +43,36 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+.sidebar .nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--sidebar-nav-link);
+}
+
+.sidebar .nav-link:hover {
+    color: var(--sidebar-nav-link-active);
+}
+
+.sidebar .nav-link.active {
+    font-weight: 700;
+    color: var(--sidebar-nav-link-active);
+}
+
+.sidebar-heading {
+    font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .sidebar .offcanvas-lg {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 48px;
+    }
+
+    .navbar-search {
+        display: block;
+    }
+}
+</style>
