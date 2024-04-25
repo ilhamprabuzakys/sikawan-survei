@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import { dt_lang_config, handleError, formatTimestamp, sleep } from "@/helpers/form-helpers";
 import { useSurveiStore } from "@/stores/survei";
-import { dt_lang_config, dt_row_pagination, formatTimestamp, sleep } from "@/helpers/form-helpers";
 
 import "survey-core/defaultV2.min.css";
 import { Model } from 'survey-core';
@@ -18,16 +18,14 @@ const showPreview = ref(false);
 
 const fetchData = async () => {
     try {
-        const response = await axios.get('http://103.210.54.17:8003/dashboard/survei/api/v1/tipe/');
-        store.setData(response.data);
-    } catch (error) {
-        console.error(error);
+        const response = await axios.get('/dashboard/survei/api/v1/tipe/');
+        store.setDataSumber(response.data);
+    } catch (e) {
+        handleError(e)
     }
 };
 
 const handleDownload = (data) => {
-    console.log(data);
-    return;
     const url = window.URL.createObjectURL(new Blob([JSON.stringify(data.daftar_pertanyaan)], { type: 'application/json' }));
     const link = document.createElement('a');
     link.href = url;
@@ -41,10 +39,6 @@ const handleDownload = (data) => {
 const alertResults = (sender) => {
     const results = JSON.stringify(sender.data);
     alert(results);
-    // saveSurveyResults(
-    //   "https://your-web-service.com/" + SURVEY_ID,
-    //   sender.data
-    // )
 };
 
 const enablePreview = (data) => {
@@ -54,6 +48,7 @@ const enablePreview = (data) => {
     survei.value.instance.onComplete.add(alertResults);
 };
 
+// DataTable
 let dt;
 const table = ref();
 
@@ -71,24 +66,15 @@ const columns = [
 const options = { language: dt_lang_config() };
 
 onMounted(async () => {
-
     dt = table.value.dt;
 
-    tableLength.value = dt?.page.info();
-
-    await sleep(1500);
-
-    console.log('data', store.data);
-
-    if (store.data.length === 0) {
+    if (store.sumber.length === 0) {
+        console.log('Sumber data survei masih kosong, akan memuat ulang ...', store.data);
         await fetchData();
-        console.log('[INFO] Data survei tidak ditemukan, memulai fetching ...', store.data);
     } else {
-        console.log('[INFO] Data survei ditemukan ...');
+        console.log('Sumber data survei sudah ada ...');
     }
 });
-
-
 </script>
 
 <template>
@@ -100,12 +86,12 @@ onMounted(async () => {
 
     <div class="table-responsive mt-3 small">
 
-        <DataTable :data="store.data" :options="options" :columns="columns" class="table table-bordered" ref="table">
+        <DataTable :data="store.sumber" :options="options" :columns="columns" class="table table-bordered" ref="table">
             <thead>
                 <tr>
                     <th scope="col">No.</th>
                     <th scope="col">Judul Survei</th>
-                    <th scope="col">Kode</th>
+                    <th scope="col" class="text-center">Kode</th>
                     <th scope="col">Waktu Dibuat</th>
                     <th scope="col">Aksi</th>
                 </tr>
@@ -118,9 +104,9 @@ onMounted(async () => {
             </template>
             <template #action="props">
                 <div class="list-button">
-                    <button type="button" class="badge bg-primary text-white" @click="handleDownload(props.rowData)">
-                        <i class="fas fa-download me-1"></i>
-                        Unduh Survei
+                    <button type="button" class="badge bg-primary text-white" @click="enablePreview(props.rowData)">
+                        <i class="fas fa-eye me-1"></i>
+                        Lihat survei
                     </button>
                 </div>
             </template>
@@ -131,6 +117,7 @@ onMounted(async () => {
     <template v-if="showPreview">
         <transition>
             <div>
+                <hr>
                 <div class="row pb-2 mt-3 border-bottom">
                     <div class="col-lg-9">
                         <h4>Pratinjau Survei - <b>{{ survei.questions.nama }}</b> <b>({{ survei.questions.id }})</b>

@@ -3,20 +3,28 @@ import { defineStore } from "pinia";
 import { db } from "@/utils/db";
 
 export const useSurveiStore = defineStore("survei", () => {
-	const getData = () => {
-		const storedData = JSON.parse(localStorage.getItem('surveys'));
+	const getData = (key) => {
+		const storedData = JSON.parse(localStorage.getItem(key));
 
 		if (storedData) return storedData;
 
 		return [];
-	};
+	}
 
-    const setData = (value) => {
-        data.value = value;
-		localStorage.setItem('surveys', JSON.stringify(data.value));
+	const setLocalStorage = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+    const setDataSumber = (value) => {
+        sumber.value = value;
+		setLocalStorage('sumber', value);
     };
 
-	const data = ref(getData());
+	const setDataSurveys = (value) => {
+        surveys.value = value;
+		setLocalStorage('surveys', value);
+    };
 
-    return { data, setData };
+	const sumber = ref(getData('sumber'));
+	const surveys = ref(getData('surveys'));
+
+    return { sumber, surveys, setDataSumber, setDataSurveys };
 });

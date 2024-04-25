@@ -1,5 +1,7 @@
 import Swal from "sweetalert2";
 
+const hideModal = () => document.querySelector('button[data-bs-dismiss="modal"]').click();
+
 const alertLoading = () => {
     Swal.fire({
         title: 'Tunggu sebentar',
@@ -63,4 +65,4 @@ const alertGenericError = () => {
     });
 }
 
-export { alertLoading, alertConfirm, alertSuccess, alertError, alertInfo, alertGenericError }
+export { hideModal, alertLoading, alertConfirm, alertSuccess, alertError, alertInfo, alertGenericError }

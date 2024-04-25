@@ -7,17 +7,23 @@ import mkcert from "vite-plugin-mkcert";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            "@": fileURLToPath(new URL("./src", import.meta.url)),
+        },
+    },
     server: {
         port: 8080,
     },
     plugins: [
         vue(),
+        //mkcert(),
         VitePWA({
             registerType: "autoUpdate",
             manifest: {
-                name: "My Awesome App",
+                name: "SIKAWAN PENGISIAN SURVEI",
                 short_name: "MyApp",
-                description: "My Awesome App description",
+                description: "SIKAWAN PENGISIAN SURVEI description",
                 theme_color: "#ffffff",
                 icons: [
                     {
@@ -50,11 +56,5 @@ export default defineConfig({
                 enabled: true,
             },
         }),
-        //mkcert(),
     ],
-    resolve: {
-        alias: {
-            "@": fileURLToPath(new URL("./src", import.meta.url)),
-        },
-    },
 });

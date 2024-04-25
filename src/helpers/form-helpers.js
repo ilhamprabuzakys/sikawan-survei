@@ -1,8 +1,9 @@
 import { alertGenericError } from "./alert-helpers";
 
+const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
 export const formatTimestamp = (timestamp) => {
-    const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const date = new Date(timestamp);
     const dayOfWeek = days[date.getDay()];
     const day = date.getDate();
@@ -17,6 +18,21 @@ export const formatTimestamp = (timestamp) => {
     const formattedTimestamp = hours + ":" + minutes + ":" + seconds + " - " + dayOfWeek + ", " + day + " " + month + " " + year;
     return formattedTimestamp;
 };
+
+export const formatDate = (dateString) => {
+    const dateParts = dateString.split("-");
+    const year = parseInt(dateParts[0]);
+    const month = parseInt(dateParts[1]) - 1;
+    const day = parseInt(dateParts[2]);
+
+    const dateObj = new Date(year, month, day);
+    const dayOfWeek = days[dateObj.getDay()];
+    const dayOfMonth = dateObj.getDate();
+    const monthName = months[dateObj.getMonth()];
+    const yearString = dateObj.getFullYear();
+
+    return `${dayOfWeek}, ${dayOfMonth} ${monthName} ${yearString}`;
+}
 
 export const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -38,10 +54,10 @@ export const dt_lang_config = () => ({
     sSearch: 'Pencarian:',
     sUrl: '',
     oPaginate: {
-        sFirst: `<i class="fas fa-angle-double-left"></i>`,
-        sPrevious: `<i class="fas fa-angle-left"></i>`,
-        sNext: `<i class="fas fa-angle-right"></i>`,
-        sLast: `<i class="fas fa-angle-double-right"></i>`,
+        sFirst: `<i class="fas fa-sm fa-angle-double-left"></i>`,
+        sPrevious: `<i class="fas fa-sm fa-angle-left"></i>`,
+        sNext: `<i class="fas fa-sm fa-angle-right"></i>`,
+        sLast: `<i class="fas fa-sm fa-angle-double-right"></i>`,
 
         // sFirst: 'Awal',
         // sPrevious: 'Sebelumnya',

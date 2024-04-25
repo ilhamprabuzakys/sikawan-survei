@@ -1,6 +1,14 @@
 /* --------------------------
  * DEFAULT THEME BOOTSTRAP
 ----------------------------- */
+
+/* --------------------------
+ * MODAL
+----------------------------- */
+.modal .modal-body {
+    overflow-x: hidden;
+}
+
 .bi {
     display: inline-block;
     width: 1rem;
