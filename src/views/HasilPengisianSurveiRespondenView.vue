@@ -7,6 +7,10 @@ import { Tabulator } from 'survey-analytics/survey.analytics.tabulator';
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { formatDate, sleep } from "@/helpers/form-helpers";
+import { alertClose, alertLoading } from "@/helpers/alert-helpers";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from 'xlsx';
 
 const route = useRoute();
 const router = useRouter();
@@ -14,6 +18,9 @@ const router = useRouter();
 const dataResponden = ref(null);
 const tipeSurvei = ref(null);
 const parentSurvei = ref(null);
+
+// window.jsPDF = jsPDF;
+window.XLSX = XLSX;
 
 const fetchData = async (id) => {
     try {
@@ -52,16 +59,18 @@ const generateData = () => {
 };
 
 onMounted(async () => {
+    alertLoading();
+
     await fetchData(route.params.id);
 
-    console.log(dataResponden.value);
-    console.log(parentSurvei.value);
+    console.log(dataResponden.value)
 
     const survey = new Model(parentSurvei.value.daftar_pertanyaan);
-    console.log(survey);
     const surveyTable = new Tabulator(survey, generateData());
+    surveyTable.render("surveyResultTable");
 
-    surveyTable.render("surveyDataTable");
+    alertClose();
+
 });
 
 </script>
@@ -112,13 +121,21 @@ onMounted(async () => {
                             <td class="fw-bold ps-3 bg-primary text-white">Alamat Responden</td>
                             <td>{{ dataResponden.alamat }}</td>
                         </tr>
+                        <tr>
+                            <td class="fw-bold ps-3 bg-primary text-white">TTD Responden</td>
+                            <td>
+                                <div class="p-3">
+                                    <img :src="dataResponden.hasil.ttd" class="img-fluid img-thumbnail" alt="ttd" />
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="p-3">
-            <div id="surveyDataTable"></div>
+        <div class="mt-3">
+            <div id="surveyResultTable"></div>
         </div>
     </div>
 

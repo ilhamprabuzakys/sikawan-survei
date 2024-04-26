@@ -33,7 +33,7 @@ const router = createRouter({
             meta: { layout: GuestLayout }
         },
         {
-            path: "/hasil/survei/:id",
+            path: "/hasil/survei/:kode/:id",
             name: "Hasil Pengisian Survei",
             component: () => import("@/views/HasilPengisianSurveiView.vue"),
             meta: { layout: GuestLayout }

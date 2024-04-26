@@ -10,6 +10,8 @@ import { Model } from 'survey-core';
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 
+import Heading from "@/components/Heading.vue";
+
 DataTable.use(DataTablesCore);
 
 const store = useSurveiStore();
@@ -76,11 +78,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="row pb-2 border-bottom">
-        <div class="col-lg-9">
-            <h4>Database Survei</h4>
-        </div>
-    </div>
+    <Heading title="Database Survei" />
 
     <div class="table-responsive mt-3 small">
 

@@ -3,17 +3,17 @@ import { onMounted, ref } from "vue";
 import { useSurveiStore } from "@/stores/survei";
 import { dt_lang_config, formatDate, getToday, handleError, sleep } from "@/helpers/form-helpers";
 import { useRoute, useRouter } from 'vue-router'
-
-const router = useRouter();
-
 import axios from "axios";
+import { alertConfirm, alertLoading, alertSuccess } from "@/helpers/alert-helpers";
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
-import { alertConfirm, alertLoading, alertSuccess } from "@/helpers/alert-helpers";
+
+import Heading from "@/components/Heading.vue";
 
 DataTable.use(DataTablesCore);
 
+const router = useRouter();
 const showDetailResponden = ref(false);
 const store = useSurveiStore();
 
@@ -64,13 +64,17 @@ const handleDeleteResponden = async (id, parent) => {
     }
 }
 
-const handleHasilSurvei = (id) => {
-    router.push(`/hasil/survei/${id}`, { replace: false });
+const handleHasilSurvei = (data) => {
+    const kode = data.parent.kode;
+    const id = data.id
+    router.push(`/hasil/survei/${kode}/${id}`, { replace: false });
 }
 
 const handleHasilResponden = (id) => {
     router.push(`/hasil/responden/${id}`, { replace: false });
 }
+
+const checkDisabledState = (data) => data.total_responden === 0;
 
 // DataTable
 let dt;
@@ -113,11 +117,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="row pb-2 border-bottom">
-        <div class="col-lg-9">
-            <h4>Daftar Survei <i class="fas fa-tasks ms-2 text-primary"></i></h4>
-        </div>
-    </div>
+    <Heading title="Daftar Survei" icon="fas fa-tasks ms-2 text-primary" />
 
     <div class="table-responsive small mt-3">
         <DataTable :data="store.surveys" :options="options" :columns="columns" class="table table-bordered" ref="table">
@@ -139,11 +139,11 @@ onMounted(async () => {
             </template>
             <template #action="props">
                 <div class="list-button py-2">
-                    <button type="button" class="badge bg-primary text-white" @click="handleHasilSurvei(props.cellData)">
+                    <button type="button" :disabled="checkDisabledState(props.rowData)" class="badge text-white" :class="checkDisabledState(props.rowData) ? 'bg-soft-light' : 'bg-primary'" @click="handleHasilSurvei(props.rowData)">
                         <i class="fas fa-list me-1"></i>
                         Hasil Pengisian
                     </button>
-                    <button type="button" class="badge bg-warning text-white" @click="handleResponden(props.cellData)">
+                    <button type="button" :disabled="checkDisabledState(props.rowData)" class="badge text-white" :class="checkDisabledState(props.rowData) ? 'bg-soft-light' : 'bg-warning'" @click="handleResponden(props.cellData)">
                         <i class="fas fa-user-group me-1"></i>
                         Responden
                     </button>
@@ -157,20 +157,15 @@ onMounted(async () => {
     </div>
 
     <template v-if="dataResponden">
-        <div id="detailResponden">
-            <div class="row mt-3 pb-2 border-bottom">
-                <div class="col-lg-9">
-                    <h4>Data Responden <i class="fas fa-users ms-2 text-warning"></i></h4>
-                </div>
-                <div class="mb-3 col-lg-3 d-flex justify-content-end">
-                    <div>
-                        <button class="btn btn-sm btn-outline-danger me-4" @click="dataResponden = null">
-                            <i class="fas fa-xmark me-2"></i>
-                            Tutup
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div id="detailResponden" class="mt-4">
+            <Heading title="Data Responden" icon="fas fa-users ms-2 text-warning">
+                <template #action>
+                    <button class="btn btn-sm btn-outline-danger me-4" @click="dataResponden = null">
+                        <i class="fas fa-xmark me-2"></i>
+                        Tutup
+                    </button>
+                </template>
+            </Heading>
 
             <div class="table-responsive small mt-3">
                 <DataTable :data="dataResponden" :options="options" :columns="columnsResponden" class="table table-bordered">

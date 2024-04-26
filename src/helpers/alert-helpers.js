@@ -1,9 +1,9 @@
 import Swal from "sweetalert2";
 
-const showModal = (id) => document.querySelector(`button[data-bs-target="#${id}"]`).click();
-const hideModal = () => document.querySelector('button[data-bs-dismiss="modal"]').click();
+export const showModal = (id) => document.querySelector(`button[data-bs-target="#${id}"]`).click();
+export const hideModal = () => document.querySelector('button[data-bs-dismiss="modal"]').click();
 
-const alertLoading = () => {
+export const alertLoading = () => {
     Swal.fire({
         title: 'Tunggu sebentar',
         icon: 'info',
@@ -16,7 +16,7 @@ const alertLoading = () => {
     });
 }
 
-const alertConfirm = (text, confirmButtonText) => {
+export const alertConfirm = (text, confirmButtonText) => {
     return Swal.fire({
         title: 'Apakah anda yakin',
         html: text,
@@ -27,7 +27,7 @@ const alertConfirm = (text, confirmButtonText) => {
     });
 }
 
-const alertSuccess = (title, text, timer) => {
+export const alertSuccess = (title, text, timer) => {
     Swal.fire({
         title: title,
         html: text,
@@ -37,7 +37,7 @@ const alertSuccess = (title, text, timer) => {
     });
 }
 
-const alertError = (title, text, timer) => {
+export const alertError = (title, text, timer) => {
     Swal.fire({
         title: title,
         html: text,
@@ -47,7 +47,7 @@ const alertError = (title, text, timer) => {
     });
 }
 
-const alertInfo = (title, text) => {
+export const alertInfo = (title, text) => {
     Swal.fire({
         title: title,
         html: text,
@@ -57,7 +57,7 @@ const alertInfo = (title, text) => {
     });
 }
 
-const alertGenericError = () => {
+export const alertGenericError = () => {
 	Swal.fire({
         title: "Terjadi kesalahan",
         html: `Terjadi kesalahan tidak diketahui, tolong kontak <strong>developer</strong> untuk mengatasi masalah ini.`,
@@ -66,4 +66,4 @@ const alertGenericError = () => {
     });
 }
 
-export { showModal, hideModal, alertLoading, alertConfirm, alertSuccess, alertError, alertInfo, alertGenericError }
+export const alertClose = () => Swal.close();

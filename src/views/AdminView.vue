@@ -13,6 +13,9 @@ import { Model } from 'survey-core';
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 
+import Heading from "@/components/Heading.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
+
 DataTable.use(DataTablesCore);
 
 const store = useSurveiStore();
@@ -76,8 +79,6 @@ const handleSubmit = async () => {
     alertLoading();
 
     await sleep(500);
-
-    console.log(form.value);
 
     if (form.value.id) {
         if (form.value.lokasi) {
@@ -162,24 +163,23 @@ const options = { language: dt_lang_config(), processing: true };
 
 onMounted(async () => {
     dt = table.value.dt;
-    if (store.surveys.length === 0) await fetchData();
+    await fetchData();
+    // if (store.surveys.length === 0) await fetchData();
 });
 </script>
 
 <template>
-    <div class="row pb-2 border-bottom">
-        <div class="col-lg-7">
-            <h4>Admin Daftar Survei</h4>
-        </div>
-        <div class="col-lg-5 d-flex justify-content-end">
+
+    <Heading title="Admin Daftar Survei">
+        <template #action>
             <div>
                 <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#actionModal" @click="form = {...formSchema}">
                     <i class="fas fa-plus me-2"></i>
                     Tambah Data
                 </button>
             </div>
-        </div>
-    </div>
+        </template>
+    </Heading>
 
     <div class="table-responsive small mt-3">
         <DataTable :data="store.surveys" :options="options" :columns="columns" class="table table-sm table-bordered" ref="table">
@@ -223,8 +223,7 @@ onMounted(async () => {
                 <hr>
                 <div class="row pb-2 mt-3 border-bottom">
                     <div class="mb-3 col-lg-9">
-                        <h4>Pratinjau Survei - <b>{{ survei.base.parent.nama }}</b> <b>({{ survei.base.parent.kode }})</b>
-                        </h4>
+                        <h4><b>Pratinjau Survei</b></h4>
                     </div>
                     <div class="mb-3 col-lg-3 d-flex justify-content-end">
                         <div>
@@ -239,7 +238,11 @@ onMounted(async () => {
                             <tbody>
                                 <tr>
                                     <td class="fw-bold ps-3 bg-success text-white">Judul Survei</td>
-                                    <td>{{ survei.base.parent.nama }}</td>
+                                    <td><b>{{ survei.base.parent.nama }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold ps-3 bg-success text-white">Kode Survei</td>
+                                    <td><b>{{ survei.base.parent.kode }}</b></td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold ps-3 bg-success text-white">Lokasi</td>
@@ -254,11 +257,11 @@ onMounted(async () => {
                                     <td>{{ survei.base.waktu_mulai }} - {{ survei.base.waktu_akhir }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold ps-3 bg-success text-white">Nama Petugas</td>
+                                    <td class="fw-bold ps-3 bg-primary text-white">Nama Petugas</td>
                                     <td>{{ survei.base.nama_petugas }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold ps-3 bg-success text-white">NIK Petugas</td>
+                                    <td class="fw-bold ps-3 bg-primary text-white">NIK Petugas</td>
                                     <td>{{ survei.base.nik_petugas }}</td>
                                 </tr>
                             </tbody>
@@ -273,98 +276,79 @@ onMounted(async () => {
         </transition>
     </template>
 
-    <div class="modal fade" id="actionModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <b>{{ form.id ? 'Formulir Edit Survei' : 'Formulir Pengisian Survei' }}</b>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form @submit.prevent="handleSubmit">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="input__survei" class="form-label required">Pilih Sumber Survei :</label>
-                            <v-select id="input__survei" :options="store.sumber" v-model="form.parent" label="nama" placeholder="--Pilih sumber--" required>
-                                <template #no-options>Data yang anda cari tidak ditemukan.</template>
-                                <template #option="{ kode, nama }"><span><b>{{ kode }}</b> - {{ nama }}</span></template>
-                            </v-select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="input__lokasi" class="form-label required">Lokasi :</label>
-
-                            <div class="my-3" v-show="form.id">
-                                Data lokasi saat ini : <b>{{ form.wilayah }}</b>
-
-                                <div class="mt-3 text-muted">
-                                    Kosongkan bagian ini jika <b>tidak</b> ingin mengganti lokasi
-                                </div>
-                            </div>
-
-                            <v-select id="input__lokasi" :options="villages" v-model="form.lokasi" @search="handleSearchWilayah" label="wilayah" placeholder="--Pilih lokasi--" required>
-                                <template #no-options>Data yang anda cari tidak ditemukan.</template>
-                                <template #spinner="{ loading }">
-                                    <div
-                                        v-if="loading"
-                                        style="border-left-color: rgba(88, 151, 251, 0.71)"
-                                        class="vs__spinner"
-                                    >
-                                    </div>
-                                </template>
-                            </v-select>
-                        </div>
-
-                        <hr class="mx-n4">
-
-                        <div class="mb-3">
-                            <label for="input__tanggal_wawancara" class="form-label required">Tanggal Wawancara :</label>
-                            <input type="date" id="input__tanggal_wawancara" class="form-control" v-model="form.tanggal_wawancara" :min="getToday()" required />
-                        </div>
-
-                        <div class="row mb-3 justify-content-between">
-                            <div class="col-lg-6 mb-3">
-                                <label for="input__waktu-mulai" class="form-label required">Waktu Mulai :</label>
-                                <input type="time" id="input__waktu-mulai" class="form-control" v-model="form.waktu_mulai" required />
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label for="input__waktu-akhir" class="form-label required">Waktu Berakhir :</label>
-                                <input type="time" id="input__waktu-akhir" class="form-control" v-model="form.waktu_akhir" required />
-                            </div>
-                        </div>
-
-                        <hr class="mx-n4">
-
-                        <div class="mb-3">
-                            <label for="input__petugas_nama" class="form-label required">Nama Petugas :</label>
-                            <input type="text" id="input__petugas_nama" class="form-control" v-model="form.nama_petugas" placeholder="Nama dari petugas pelaksana" required />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="input__petugas_nik" class="form-label required">NIK Petugas :</label>
-                            <InputMask
-                                id="ssn"
-                                v-model="form.nik_petugas"
-                                mask="9999999999999999"
-                                placeholder="________________"
-                                class="form-control"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-xmark me-2"></i>
-                            Tutup
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>
-                            Simpan Data
-                        </button>
-                    </div>
-                </form>
+    <ModalDialog id="actionModal" :is-form="true" @submit="handleSubmit">
+        <template #header>
+            <b>{{ form.id ? 'Formulir Edit Survei' : 'Formulir Pengisian Survei' }}</b>
+        </template>
+        <template #body>
+            <div class="mb-3">
+                <label for="input__survei" class="form-label required">Pilih Sumber Survei :</label>
+                <v-select id="input__survei" :options="store.sumber" v-model="form.parent" label="nama" placeholder="--Pilih sumber--" required>
+                    <template #no-options>Data yang anda cari tidak ditemukan.</template>
+                    <template #option="{ kode, nama }"><span><b>{{ kode }}</b> - {{ nama }}</span></template>
+                </v-select>
             </div>
-        </div>
-    </div>
+
+            <div class="mb-3">
+                <label for="input__lokasi" class="form-label required">Lokasi :</label>
+
+                <div class="my-3" v-show="form.id">
+                    Data lokasi saat ini : <b>{{ form.wilayah }}</b>
+
+                    <div class="mt-3 text-muted">
+                        Kosongkan bagian ini jika <b>tidak</b> ingin mengganti lokasi
+                    </div>
+                </div>
+
+                <v-select id="input__lokasi" :options="villages" v-model="form.lokasi" @search="handleSearchWilayah" label="wilayah" placeholder="--Pilih lokasi--" required>
+                    <template #no-options>Data yang anda cari tidak ditemukan.</template>
+                    <template #spinner="{ loading }">
+                        <div
+                            v-if="loading"
+                            style="border-left-color: rgba(88, 151, 251, 0.71)"
+                            class="vs__spinner"
+                        >
+                        </div>
+                    </template>
+                </v-select>
+            </div>
+
+            <hr class="mx-n4">
+
+            <div class="mb-3">
+                <label for="input__tanggal_wawancara" class="form-label required">Tanggal Wawancara :</label>
+                <input type="date" id="input__tanggal_wawancara" class="form-control" v-model="form.tanggal_wawancara" :min="getToday()" required />
+            </div>
+
+            <div class="row mb-3 justify-content-between">
+                <div class="col-lg-6 mb-3">
+                    <label for="input__waktu-mulai" class="form-label required">Waktu Mulai :</label>
+                    <input type="time" id="input__waktu-mulai" class="form-control" v-model="form.waktu_mulai" required />
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <label for="input__waktu-akhir" class="form-label required">Waktu Berakhir :</label>
+                    <input type="time" id="input__waktu-akhir" class="form-control" v-model="form.waktu_akhir" required />
+                </div>
+            </div>
+
+            <hr class="mx-n4">
+
+            <div class="mb-3">
+                <label for="input__petugas_nama" class="form-label required">Nama Petugas :</label>
+                <input type="text" id="input__petugas_nama" class="form-control" v-model="form.nama_petugas" placeholder="Nama dari petugas pelaksana" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="input__petugas_nik" class="form-label required">NIK Petugas :</label>
+                <InputMask
+                    id="ssn"
+                    v-model="form.nik_petugas"
+                    mask="9999999999999999"
+                    placeholder="________________"
+                    class="form-control"
+                    required
+                />
+            </div>
+        </template>
+    </ModalDialog>
 </template>

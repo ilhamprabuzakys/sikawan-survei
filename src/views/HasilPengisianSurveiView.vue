@@ -1,19 +1,25 @@
 <script setup>
 import { handleError, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import 'tabulator-tables/dist/css/tabulator.min.css';
 import 'survey-analytics/survey.analytics.tabulator.min.css';
 import { Model } from 'survey-core';
 import { Tabulator } from 'survey-analytics/survey.analytics.tabulator';
-import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { formatDate, sleep } from "@/helpers/form-helpers";
+import { alertClose, alertLoading } from "@/helpers/alert-helpers";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from 'xlsx';
 
 const route = useRoute();
 const router = useRouter();
 
 const dataResponden = ref(null);
-const tipeSurvei = ref(null);
-const parentSurvei = ref(null);
+const dataSurvei = ref(null);
+
+// window.jsPDF = jsPDF;
+window.XLSX = XLSX;
 
 const fetchDataResponden = async (id) => {
     try {
@@ -29,11 +35,8 @@ const fetchData = async (id) => {
     try {
         const response = await axios.get(`/dashboard/survei/api/v1/data/${id}/`);
         const data = response.data;
-        tipeSurvei.value = data;
-        parentSurvei.value = data.parent;
-
+        dataSurvei.value = data;
         await fetchDataResponden(data.id);
-
     } catch (e) {
         handleError(e);
     }
@@ -57,25 +60,25 @@ const generateData = () => {
 };
 
 onMounted(async () => {
+    alertLoading();
+
     await fetchData(route.params.id);
 
-    console.log(dataResponden.value);
-    console.log(parentSurvei.value);
+    const surveyInstance = new Model(dataSurvei.value.parent.daftar_pertanyaan);
+    const surveyTable = new Tabulator(surveyInstance, generateData());
 
-    const survey = new Model(parentSurvei.value.daftar_pertanyaan);
-    console.log(survey);
-    const surveyTable = new Tabulator(survey, generateData());
+    surveyTable.render("surveyResultTable");
 
-    surveyTable.render("surveyDataTable");
+    alertClose();
 });
-
 </script>
+
 <template>
-    <div v-if="tipeSurvei">
+    <div v-if="dataSurvei">
         <div class="row pb-2 mt-3 border-bottom">
             <div class="mb-3 col-lg-9">
-                <h4>Hasil Pengisian Survei - <br><b>{{ tipeSurvei?.parent.nama }}</b>
-                    <b>({{ tipeSurvei?.parent.kode }})</b>
+                <h4>Hasil Pengisian Survei - <br><b>{{ dataSurvei.parent.nama }}</b>
+                    <b>({{ dataSurvei.parent.kode }})</b>
                 </h4>
             </div>
             <div class="mb-3 col-lg-3 d-flex justify-content-end align-items-center">
@@ -91,36 +94,35 @@ onMounted(async () => {
                     <tbody>
                         <tr>
                             <td class="fw-bold ps-3 bg-success text-white">Judul Survei</td>
-                            <td>{{ tipeSurvei?.parent.nama }}</td>
+                            <td>{{ dataSurvei.parent.nama }}</td>
                         </tr>
                         <tr>
                             <td class="fw-bold ps-3 bg-success text-white">Lokasi</td>
-                            <td>{{ tipeSurvei.wilayah }}</td>
+                            <td>{{ dataSurvei.wilayah }}</td>
                         </tr>
                         <tr>
                             <td class="fw-bold ps-3 bg-success text-white">Tanggal Wawancara</td>
-                            <td>{{ formatDate(tipeSurvei.tanggal_wawancara) }}</td>
+                            <td>{{ formatDate(dataSurvei.tanggal_wawancara) }}</td>
                         </tr>
                         <tr>
                             <td class="fw-bold ps-3 bg-success text-white">Waktu</td>
-                            <td>{{ tipeSurvei.waktu_mulai }} - {{ tipeSurvei.waktu_akhir }}</td>
+                            <td>{{ dataSurvei.waktu_mulai }} - {{ dataSurvei.waktu_akhir }}</td>
                         </tr>
                         <tr>
                             <td class="fw-bold ps-3 bg-primary text-white">Nama Petugas</td>
-                            <td>{{ tipeSurvei.nama_petugas }}</td>
+                            <td>{{ dataSurvei.nama_petugas }}</td>
                         </tr>
                         <tr>
                             <td class="fw-bold ps-3 bg-primary text-white">NIK Petugas</td>
-                            <td>{{ tipeSurvei.nik_petugas }}</td>
+                            <td>{{ dataSurvei.nik_petugas }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="p-3">
-            <div id="surveyDataTable"></div>
+        <div class="mt-3">
+            <div id="surveyResultTable"></div>
         </div>
     </div>
-
 </template>

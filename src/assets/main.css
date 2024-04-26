@@ -130,6 +130,43 @@ button.badge:active, button.badge:focus {
     width: 100%;
 }
 
+.bg-soft-light, .btn-soft-light {
+    background-color: #9f9f9f !important;
+}
+
+.bg-soft-light:hover,
+.bg-soft-light:focus,
+.bg-soft-light:active,
+.btn-soft-light:hover,
+.btn-soft-light:focus,
+.btn-soft-light:active {
+    background-color: #989898 !important;
+}
+
+.modal-footer button {
+    text-transform: uppercase !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+button.btn-light {
+    background-color: #ececec !important;
+    border-color: #d2d2d2 !important;
+    color: #4e4e4e !important;
+}
+
+button.btn-light:hover,
+button.btn-light:focus,
+button.btn-light:active {
+    background-color: #dbdbdb !important;
+    border-color: #d6d6d6 !important;
+}
+
+button[disabled] {
+    cursor: default;
+    user-select: none;
+}
+
 /* --------------------------
  * UTILITY CLASSES
 ----------------------------- */

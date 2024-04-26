@@ -11,7 +11,7 @@ import Logo from '@/assets/logo.png';
             <router-link class="navbar-brand col-md-3 col-lg-2 me-0 fs-6 text-white text-center fw-semibold" to="/">
                 <img src="@/assets/logo.png" alt="" style="height: 50px">
 
-                Survei SIKAWAN
+                Survei IKRN
             </router-link>
         </div>
 
