@@ -13,8 +13,7 @@ import DataTablesCore from 'datatables.net-bs5';
 DataTable.use(DataTablesCore);
 
 const store = useSurveiStore();
-const survei = ref({ questions: null, instance: null });
-const showPreview = ref(false);
+const survei = ref({ base: null, instance: null });
 
 const fetchData = async () => {
     try {
@@ -41,9 +40,8 @@ const alertResults = (sender) => {
     alert(results);
 };
 
-const enablePreview = (data) => {
-    showPreview.value = true;
-    survei.value.questions = data;
+const handlePreview = (data) => {
+    survei.value.base = data;
     survei.value.instance = new Model(data.daftar_pertanyaan);
     survei.value.instance.onComplete.add(alertResults);
 };
@@ -63,7 +61,7 @@ const columns = [
     { data: 'id', render: "#action" },
 ];
 
-const options = { language: dt_lang_config() };
+const options = { language: dt_lang_config(), processing: true };
 
 onMounted(async () => {
     dt = table.value.dt;
@@ -97,14 +95,14 @@ onMounted(async () => {
                 </tr>
             </thead>
             <template #nama="props">
-                <span @click="enablePreview(props.rowData)" class="cursor-pointer h-underline">{{ props.cellData }}</span>
+                <span @click="handlePreview(props.rowData)" class="cursor-pointer h-underline">{{ props.cellData }}</span>
             </template>
             <template #numbering="props">
                 {{ props.rowIndex+1 }}
             </template>
             <template #action="props">
                 <div class="list-button">
-                    <button type="button" class="badge bg-primary text-white" @click="enablePreview(props.rowData)">
+                    <button type="button" class="badge bg-primary text-white" @click="handlePreview(props.rowData)">
                         <i class="fas fa-eye me-1"></i>
                         Lihat survei
                     </button>
@@ -113,25 +111,20 @@ onMounted(async () => {
         </DataTable>
     </div>
 
-
-    <template v-if="showPreview">
+    <template v-if="survei.instance">
         <transition>
             <div>
                 <hr>
                 <div class="row pb-2 mt-3 border-bottom">
                     <div class="col-lg-9">
-                        <h4>Pratinjau Survei - <b>{{ survei.questions.nama }}</b> <b>({{ survei.questions.id }})</b>
+                        <h4>Pratinjau Survei - <b>{{ survei.base.nama }}</b> <b>({{ survei.base.kode }})</b>
                         </h4>
                     </div>
                     <div class="col-lg-3 d-flex justify-content-end">
                         <div>
-                            <button class="btn btn-sm btn-light me-4" @click="showPreview = false">
+                            <button class="btn btn-sm btn-outline-danger me-4" @click="survei.instance = null">
                                 <i class="fas fa-xmark me-2"></i>
-                                Hide
-                            </button>
-                            <button class="btn btn-sm btn-primary" @click="handleDownload(survei.questions)">
-                                <i class="fas fa-download me-2"></i>
-                                Unduh Survei
+                                Tutup
                             </button>
                         </div>
                     </div>

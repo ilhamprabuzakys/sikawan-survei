@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 
+const showModal = (id) => document.querySelector(`button[data-bs-target="#${id}"]`).click();
 const hideModal = () => document.querySelector('button[data-bs-dismiss="modal"]').click();
 
 const alertLoading = () => {
@@ -65,4 +66,4 @@ const alertGenericError = () => {
     });
 }
 
-export { hideModal, alertLoading, alertConfirm, alertSuccess, alertError, alertInfo, alertGenericError }
+export { showModal, hideModal, alertLoading, alertConfirm, alertSuccess, alertError, alertInfo, alertGenericError }

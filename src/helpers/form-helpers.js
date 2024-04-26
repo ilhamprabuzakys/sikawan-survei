@@ -34,6 +34,24 @@ export const formatDate = (dateString) => {
     return `${dayOfWeek}, ${dayOfMonth} ${monthName} ${yearString}`;
 }
 
+export const getToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+
+    // Tambahkan '0' di depan bulan dan hari jika nilainya kurang dari 10
+    if (month < 10) {
+        month = '0' + month;
+    }
+    if (day < 10) {
+        day = '0' + day;
+    }
+
+    // Format tanggal sesuai dengan ISO (YYYY-MM-DD)
+    return `${year}-${month}-${day}`;
+}
+
 export const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 export const handleError = (error) => {
