@@ -19,7 +19,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 axios.defaults.baseURL = 'http://103.210.54.17:8003';
-
 const app = createApp(App);
 
 app.use(createPinia());
